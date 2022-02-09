@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0ad5c21df75a5f459347c73dabdf63c, type: 3}
   m_Name: Insane
   m_EditorClassIdentifier: 
-  _columns: 5
-  _rows: 2
+  _columns: 4
+  _rows: 4
   _cellSize: 64
   _levelTypeIndex: 0

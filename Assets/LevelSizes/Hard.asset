@@ -15,4 +15,4 @@ MonoBehaviour:
   _columns: 3
   _rows: 3
   _cellSize: 64
-  _levelTypeIndex: 0
+  _levelTypeIndex: 1

@@ -1,23 +1,14 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class LevelTaskUI : MonoBehaviour
+namespace UI
 {
-    [SerializeField] private LevelTaskGenerator _taskGenerator;
-    [SerializeField] private Text _taskName;
-    
-    public void AddListenersOnEvents()
+    public class LevelTaskUI : MonoBehaviour, ILevelTaskUI
     {
-        _taskGenerator.OnTaskGenerated.AddListener(() => ChangeTask());
-    }
-	
-    private void ChangeTask()
-    {
-        _taskName.text = _taskGenerator.CurrentTusk.ObjectNameToFind;
-    }
-	
-    private void OnDisable() 
-    {
-        _taskGenerator.OnTaskGenerated.RemoveListener(() => ChangeTask());
+        [SerializeField] private Text _taskName;
+        public void ChangeTask(ITaskGenerator taskGenerator)
+        {
+            _taskName.text = taskGenerator.GetCurrentTask().ObjectNameToFind;
+        }
     }
 }

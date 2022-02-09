@@ -1,48 +1,66 @@
 using UnityEngine;
+using Level;
 
-public class CellsEffects : MonoBehaviour
+namespace Effects
 {
-    [SerializeField] private CellsGenerator _cellsGenerator;
-    private const string BOUNCE_EFFECT = "Bounce";
-    private const string EASE_IN_BOUNCE_EFFECT = "EaseInBounce";
-    private bool _isStart = true;
-
-    private void Start() 
+    public class CellsEffects : Effect, ICellEffect
     {
-        _cellsGenerator.OnPullGenerated.AddListener((pull) => PlayStartAnimation());
-        AnswerClick.GetFalseAnswerEvent().AddListener((cell) => EaseInBounce(cell));
-        AnswerClick.GetTrueAnswerEvent().AddListener((cell) => BounceEffect(cell));
-    }
+        private bool _isStart = true;
 
-    private void BounceEffect(GameObject cell)
-    {
-        cell.GetComponent<Animator>().Play(BOUNCE_EFFECT);
-        if(_isStart)
+        private void Start() 
         {
-            _cellsGenerator.OnPullGenerated.RemoveListener((pull) => PlayStartAnimation());
-            _isStart = false;
+            AnswerClick.GetFalseAnswerEvent().AddListener((cell) => EaseInBounce(cell));
+            AnswerClick.GetTrueAnswerEvent().AddListener((cell) => BounceEffect(cell));
+            AnswerClick.GetTrueAnswerEvent().AddListener((cell) => StartParticles(cell.GetComponentInChildren<ParticleSystem>()));
         }
-    }
-	
-    private void EaseInBounce(GameObject cell)
-    {
-        cell.GetComponent<Animator>().Play(EASE_IN_BOUNCE_EFFECT);
-    }
-	
-    private void PlayStartAnimation()
-    {
-        if(_isStart)
+
+        protected override void BounceEffect(GameObject cell)
         {
-            for(int i = 0; i < _cellsGenerator.CreatedCells.Count; i++)
+            cell.GetComponent<Animator>().Play(BOUNCE_EFFECT);
+        }
+        
+        protected override void EaseInBounce(GameObject cell)
+        {
+            cell.GetComponent<Animator>().Play(EASE_IN_BOUNCE_EFFECT);
+        }
+		
+        private void StartParticles(ParticleSystem particles)
+        {
+            particles.Play();
+        }
+        
+        public void PlayStartAnimation(ICellsGeneratable cellsGenerator)
+        {
+            if(_isStart)
             {
-                BounceEffect(_cellsGenerator.CreatedCells[i]);
+                for(int i = 0; i < cellsGenerator.CreatedCells().Count; i++)
+                {
+                    BounceEffect(cellsGenerator.CreatedCells()[i]);
+                }
+                _isStart = false;
             }
-       	}
-    }
-	
-    private void OnDisable() 
-    {
-        AnswerClick.GetFalseAnswerEvent().RemoveListener((cell) => EaseInBounce(cell));
-        AnswerClick.GetTrueAnswerEvent().RemoveListener((cell) => BounceEffect(cell));
+        }
+        
+        private void OnDisable() 
+        {
+            AnswerClick.GetFalseAnswerEvent().RemoveListener((cell) => EaseInBounce(cell));
+            AnswerClick.GetTrueAnswerEvent().RemoveListener((cell) => BounceEffect(cell));
+            AnswerClick.GetTrueAnswerEvent().RemoveListener((cell) => StartParticles(cell.GetComponent<ParticleSystem>()));
+        }
+
+        public override void LoadingScreenFadeInEffect(Animator loadingScreen)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        protected override void FadeOutEffect(Animator blackScreen)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void FadeInEffect(Animator blackScreen)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

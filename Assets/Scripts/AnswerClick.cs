@@ -1,31 +1,34 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-public class AnswerClick : MonoBehaviour
+namespace Level
 {
-    private static OnFalseAnswerEvent _onTrueAnswer = new OnFalseAnswerEvent();
-    private static OnFalseAnswerEvent _onFalseAnswer = new OnFalseAnswerEvent();
-	
-    public void CheckAnswer(Cell cell)
+    public class AnswerClick : MonoBehaviour
     {
-        if(cell.IsTrueAnswer)
+        private static OnFalseAnswerEvent _onTrueAnswer = new OnFalseAnswerEvent();
+        private static OnFalseAnswerEvent _onFalseAnswer = new OnFalseAnswerEvent();
+        
+        public void CheckAnswer(Cell cell)
         {
-            _onTrueAnswer.Invoke(cell.gameObject);
+            if(cell.IsTrueAnswer)
+            {
+                _onTrueAnswer.Invoke(cell.gameObject);
+            }
+            else
+            {
+                _onFalseAnswer.Invoke(cell.gameObject);
+            }
         }
-        else
+        
+        public static OnFalseAnswerEvent GetTrueAnswerEvent()
         {
-            _onFalseAnswer.Invoke(cell.gameObject);
+            return _onTrueAnswer;
         }
-    }
-	
-    public static OnFalseAnswerEvent GetTrueAnswerEvent()
-    {
-        return _onTrueAnswer;
-    }
-	
-    public static OnFalseAnswerEvent GetFalseAnswerEvent()
-    {
-        return _onFalseAnswer;
+        
+        public static OnFalseAnswerEvent GetFalseAnswerEvent()
+        {
+            return _onFalseAnswer;
+        }
     }
 }
 

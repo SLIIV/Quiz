@@ -1,49 +1,41 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 
-public class LevelTaskGenerator : MonoBehaviour
+namespace Level
 {
-    public Task CurrentTusk { get { return _currentTusk; } }
-    public UnityEvent OnTaskGenerated { get { return _onTaskGenerated; } }
-    [SerializeField] private CellsGenerator _cellsGenerator;
-    private List<string> _createdTasksObjects = new List<string>();
-    private Task _currentTusk = new Task();
-    private UnityEvent _onTaskGenerated = new UnityEvent();
-
-    public void AddListenersOnEvents()
+    public class LevelTaskGenerator : MonoBehaviour, ITaskGenerator
     {
-        _cellsGenerator.OnPullGenerated.AddListener((generatedPull) => GenerateTask(generatedPull));
-    }
-	
-    public void GenerateTask(List<ObjectInCell> generatedPull)
-    {
-        Task task = new Task();
-        int randomObjectIndex;
-        do
+        private List<string> _createdTasksObjects = new List<string>();
+        private Task _currentTusk = new Task();
+        
+        public void GenerateTask(ICellsGeneratable cellsGenerator)
         {
-            if(_createdTasksObjects.Count >= generatedPull.Count)
+            Task task = new Task();
+            int randomObjectIndex;
+            do
             {
-                Debug.LogError("Все задачи выполнены");
-                return;
+                if(_createdTasksObjects.Count >= cellsGenerator.GeneratedPull().Count)
+                {
+                    Debug.LogError("Все задачи выполнены");
+                    return;
+                }
+                randomObjectIndex = Random.Range(0, cellsGenerator.GeneratedPull().Count);
             }
-            randomObjectIndex = Random.Range(0, generatedPull.Count);
+            while(_createdTasksObjects.Contains(cellsGenerator.GeneratedPull()[randomObjectIndex].Name));
+            task.ObjectNameToFind = cellsGenerator.GeneratedPull()[randomObjectIndex].Name;
+            cellsGenerator.CreatedCells()[randomObjectIndex].GetComponent<Cell>().SetAnswerTrue();
+            _currentTusk = task;
+            _createdTasksObjects.Add(cellsGenerator.GeneratedPull()[randomObjectIndex].Name);
         }
-        while(_createdTasksObjects.Contains(generatedPull[randomObjectIndex].Name));
-        task.ObjectNameToFind = generatedPull[randomObjectIndex].Name;
-        _cellsGenerator.CreatedCells[randomObjectIndex].GetComponent<Cell>().SetAnswerTrue();
-        _currentTusk = task;
-        _createdTasksObjects.Add(generatedPull[randomObjectIndex].Name);
-        _onTaskGenerated.Invoke();
-    }
-	
-    private void OnDisable()
-    {
-        _cellsGenerator.OnPullGenerated.RemoveListener((generatedPull) => GenerateTask(generatedPull));
-    }
-}
 
-public struct Task
-{
-    public string ObjectNameToFind;
+        public Task GetCurrentTask()
+        {
+            return _currentTusk;
+        }
+    }
+
+    public struct Task
+    {
+        public string ObjectNameToFind;
+    }
 }

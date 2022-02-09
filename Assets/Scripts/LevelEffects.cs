@@ -1,39 +1,34 @@
 using UnityEngine;
 
-public class LevelEffects : MonoBehaviour
+namespace Effects
 {
-    [SerializeField] private Animator _blackWindow;
-    [SerializeField] private Animator _loadingWindow;
-    [SerializeField] private LevelChanger _levelChanger;
-    private const string FADE_OUT_EFFECT = "FadeOut";
-    private const string FADE_IN_EFFECT = "FadeIn";
-    private const string LOADING_SCREEN_FADE_IN_EFFECT = "LoadingScreenFadeIn";
-    
-    private void Start() 
+    public class LevelEffects : Effect, IEffecteble
     {
-        _levelChanger.OnGameOver.AddListener(() => FadeInEffect());
-    }
+        public override void LoadingScreenFadeInEffect(Animator loadingScreen)
+        {
+            loadingScreen.Play(LOADING_SCREEN_FADE_IN_EFFECT);
+        }
 
-    public void LoadingScreenFadeInEffect()
-    {
-        _loadingWindow.gameObject.SetActive(true);
-        _loadingWindow.Play(LOADING_SCREEN_FADE_IN_EFFECT);
-    }
+        protected override void FadeOutEffect(Animator blackScreen)
+        {
 
-    private void FadeOutEffect()
-    {
+            blackScreen.Play(FADE_OUT_EFFECT);
+        }
 
-        _blackWindow.Play(FADE_OUT_EFFECT);
-    }
+        public override void FadeInEffect(Animator blackScreen)
+        {
+            blackScreen.gameObject.SetActive(true);
+            blackScreen.Play(FADE_IN_EFFECT);
+        }
 
-    private void FadeInEffect()
-    {
-        _blackWindow.gameObject.SetActive(true);
-        _blackWindow.Play(FADE_IN_EFFECT);
-    }
-	
-    private void OnDisable()
-    {
-        _levelChanger.OnGameOver.RemoveListener(() => FadeInEffect());
+        protected override void BounceEffect(GameObject cell)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        protected override void EaseInBounce(GameObject cell)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

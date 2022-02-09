@@ -2,33 +2,41 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class UIButtons : MonoBehaviour
+namespace UI
 {
-    [SerializeField] private GameObject _restartButton;
-    [SerializeField] private LevelChanger _levelChanger;
-    [SerializeField] private LevelEffects _levelEffects;
-    [SerializeField] private float _restartDelay;
+    class UIButtons : MonoBehaviour, IUIButtons
+    {
+            [SerializeField] private GameObject _restartButton;
+            [SerializeField] private float _restartDelay;
+            [SerializeField] private GameObject _gameOverObject;
+            private IGameOverable _gameOver;
 
-    private void Start()
-    {
-        _levelChanger.OnGameOver.AddListener(()=> ShowRestartButton());
-    }
+            private void Start()
+            {
+                _gameOver = _gameOverObject.GetComponent<IGameOverable>();
+                if(_gameOver == null)
+                {
+                    throw new System.Exception("Null reference exception: GameOver not contains interface IGameOverable");
+                }
+            }
 
-    private void ShowRestartButton()
-    {
-        _restartButton.SetActive(true);
-    }
-	
-    public void Restart()
-    {
-        _restartButton.SetActive(false);
-        _levelEffects.LoadingScreenFadeInEffect();
-        StartCoroutine(LoadSceneByDelay());
-    }
-	
-    public IEnumerator LoadSceneByDelay()
-    {
-        yield return new WaitForSeconds(_restartDelay);
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            public void ShowRestartButton()
+            {
+                _gameOver.ShowBlackScreen();
+                _gameOver.ShowRestartButton();
+            }
+            
+            public void Restart()
+            {
+                _gameOver.ShowLoadingScreen();
+                _gameOver.HideRestartButton();
+                StartCoroutine(LoadSceneByDelay());
+            }
+            
+            public IEnumerator LoadSceneByDelay()
+            {
+                yield return new WaitForSeconds(_restartDelay);
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            }
     }
 }
