@@ -479,6 +479,7 @@ MonoBehaviour:
   _gameZoneObject: {fileID: 2082626417}
   _levelTaskUIObject: {fileID: 2144839310}
   _UIObject: {fileID: 2144839310}
+  _cellEffectsObject: {fileID: 1743698731}
 --- !u!4 &1341265634
 Transform:
   m_ObjectHideFlags: 0
@@ -823,7 +824,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d823d790e3d3dc0459f46b29ceaa3cdf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _cellsGeneratorObject: {fileID: 1706526695}
 --- !u!4 &1743698733
 Transform:
   m_ObjectHideFlags: 0
